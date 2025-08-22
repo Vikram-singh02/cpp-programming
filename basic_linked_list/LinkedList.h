@@ -28,6 +28,12 @@ public:
     // Function to display the list
     void display();
     
+    // Function to search for a value in the list
+    bool search(int value);
+    
+    // Function to get the current size of the list
+    int size() const;
+    
     // Destructor to free memory
     ~LinkedList();
 };

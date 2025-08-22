@@ -1,4 +1,22 @@
-# Basic Linked List Implementation in C++
+# Basic Linked List Implementation
+
+This is a comprehensive implementation of a singly linked list data structure in C++. The project demonstrates various operations on a linked list with an interactive menu system and robust error handling.
+
+## Features
+
+### Basic Operations
+- Insert elements at the front of the list
+- Insert elements at the end of the list
+- Delete elements by value
+- Display the entire list
+
+### Advanced Features
+- Search for elements in the list
+- Get the current size of the list
+- Interactive menu system
+- Input validation and error handling
+- Memory allocation error handling
+- Informative operation feedbacknked List Implementation in C++
 
 This is a simple implementation of a singly linked list data structure in C++. The project demonstrates basic operations on a linked list including insertion, deletion, and traversal.
 
@@ -48,14 +66,49 @@ After building, run the program with:
 ./linkedlist
 ```
 
+## Interactive Menu Options
+
+The program provides an interactive menu with the following options:
+1. Insert Value at front
+2. Insert Value at end
+3. Delete Value
+4. Display List
+5. Search Value
+6. Get List Size
+7. Exit
+
+## Error Handling
+
+The program includes comprehensive error handling for:
+- Invalid menu choices
+- Non-numeric input
+- Memory allocation failures
+- Empty list operations
+- Value not found in list
+
 ## Sample Output
 
 ```
-Initial list: 1 -> 2 -> 3 -> 4 -> 5 -> NULL
-After deleting 3: 1 -> 2 -> 4 -> 5 -> NULL
-After deleting 1: 2 -> 4 -> 5 -> NULL
-After deleting 5: 2 -> 4 -> NULL
+=== Linked List Operations ===
+1. Insert Value at front
+2. Insert Value at end
+3. Delete Value
+4. Display List
+5. Search Value
+6. Get List Size
+7. Exit
+
+Enter your choice (1-7): 1
+Enter value to insert at front: 10
+Value 10 inserted at front successfully!
+
+Current List: 10 -> NULL
+
+Enter your choice (1-7): 5
+Enter value to search: 10
+Value 10 found in the list!
 ```
+
 
 ## Implementation Details
 
