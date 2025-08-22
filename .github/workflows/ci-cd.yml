@@ -1,0 +1,107 @@
+name: C++ CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential g++ make
+        
+    - name: Build Basic Linked List
+      run: |
+        cd basic_linked_list
+        make clean
+        make
+        
+    - name: Run Automated Tests
+      run: |
+        cd basic_linked_list
+        chmod +x test.sh
+        ./test.sh
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: cpp-binaries-${{ github.sha }}
+        path: |
+          basic_linked_list/linkedlist
+          basic_linked_list/README.md
+        retention-days: 30
+
+  create-release:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential g++ make
+        
+    - name: Build for Release
+      run: |
+        cd basic_linked_list
+        make clean
+        make
+        
+    - name: Package Release
+      run: |
+        mkdir -p release
+        cp basic_linked_list/linkedlist release/
+        cp basic_linked_list/README.md release/
+        cp basic_linked_list/LinkedList.h release/
+        cp basic_linked_list/main.cpp release/
+        cp basic_linked_list/Makefile release/
+        tar -czf cpp-programming-release.tar.gz release/
+        
+    - name: Create Release Tag
+      id: tag
+      run: |
+        TAG_NAME="v$(date +'%Y.%m.%d')-$(echo ${{ github.sha }} | cut -c1-7)"
+        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+        echo "Created tag: $TAG_NAME"
+        
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.tag.outputs.tag_name }}
+        name: Release ${{ steps.tag.outputs.tag_name }}
+        body: |
+          ## C++ Programming Release
+          
+          This release contains the compiled binaries and source code for the Basic Linked List implementation.
+          
+          ### What's Included:
+          - Compiled executable (`linkedlist`)
+          - Complete source code
+          - Documentation
+          - Makefile for building
+          
+          ### Changes in this release:
+          - Enhanced LinkedList implementation with interactive menu
+          - Robust error handling and input validation
+          - Search and size functionality
+          - Comprehensive documentation
+          
+        files: |
+          cpp-programming-release.tar.gz
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

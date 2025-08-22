@@ -1,6 +1,18 @@
 # C++ Programming Examples
 
+![CI/CD Pipeline](https://github.com/Vikram-singh02/cpp-programming/actions/workflows/ci-cd.yml/badge.svg)
+
 This repository contains various C++ programming examples and implementations, focusing on fundamental data structures and algorithms.
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and deployment:
+- ✅ Automatic building and testing on every push
+- ✅ Automated test suite with comprehensive coverage
+- ✅ Binary artifact generation
+- ✅ Automatic releases on main branch updates
+
+See [CI/CD Documentation](.github/README.md) for more details.
 
 ## Projects
 
