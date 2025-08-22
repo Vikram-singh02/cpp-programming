@@ -4,6 +4,7 @@
 
 using namespace std;
 
+
 // Implementation of LinkedList member functions
 void LinkedList::insertFront(int value) {
     Node* newNode = nullptr;
