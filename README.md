@@ -9,8 +9,16 @@ This repository contains various C++ programming examples and implementations, f
 This project uses GitHub Actions for continuous integration and deployment:
 - ✅ Automatic building and testing on every push
 - ✅ Automated test suite with comprehensive coverage
-- ✅ Binary artifact generation
-- ✅ Automatic releases on main branch updates
+- ✅ Binary artifact generation for every build
+- ✅ Manual release creation with custom versioning
+
+### Creating Releases
+To create a new release:
+1. Go to the "Actions" tab in GitHub
+2. Select "Manual Release" workflow
+3. Click "Run workflow"
+4. Enter version number and release notes
+5. The system will build, test, and create the release automatically
 
 See [CI/CD Documentation](.github/README.md) for more details.
 

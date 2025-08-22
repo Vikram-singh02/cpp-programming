@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: write
+  actions: read
+  packages: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -40,7 +45,7 @@ jobs:
           basic_linked_list/README.md
         retention-days: 30
 
-  create-release:
+  build-artifacts:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -68,40 +73,14 @@ jobs:
         cp basic_linked_list/LinkedList.h release/
         cp basic_linked_list/main.cpp release/
         cp basic_linked_list/Makefile release/
+        cp basic_linked_list/test.sh release/
         tar -czf cpp-programming-release.tar.gz release/
         
-    - name: Create Release Tag
-      id: tag
-      run: |
-        TAG_NAME="v$(date +'%Y.%m.%d')-$(echo ${{ github.sha }} | cut -c1-7)"
-        echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
-        echo "Created tag: $TAG_NAME"
-        
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
+    - name: Upload Release Artifacts
+      uses: actions/upload-artifact@v4
       with:
-        tag_name: ${{ steps.tag.outputs.tag_name }}
-        name: Release ${{ steps.tag.outputs.tag_name }}
-        body: |
-          ## C++ Programming Release
-          
-          This release contains the compiled binaries and source code for the Basic Linked List implementation.
-          
-          ### What's Included:
-          - Compiled executable (`linkedlist`)
-          - Complete source code
-          - Documentation
-          - Makefile for building
-          
-          ### Changes in this release:
-          - Enhanced LinkedList implementation with interactive menu
-          - Robust error handling and input validation
-          - Search and size functionality
-          - Comprehensive documentation
-          
-        files: |
+        name: release-package-${{ github.sha }}
+        path: |
           cpp-programming-release.tar.gz
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          release/
+        retention-days: 90

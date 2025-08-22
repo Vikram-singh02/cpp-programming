@@ -8,28 +8,29 @@ The CI/CD pipeline automatically:
 1. **Builds** the C++ projects on every push/PR
 2. **Tests** the functionality with automated test scripts
 3. **Creates artifacts** with compiled binaries
-4. **Creates releases** on main branch pushes
+4. **Packages releases** for distribution
 
-## Workflow Details
+## Workflows
 
-### Triggers
-- **Push** to `main` or `develop` branches
-- **Pull Requests** to `main` branch
+### 1. Main CI/CD Pipeline (`ci-cd.yml`)
+**Triggers:**
+- Push to `main` or `develop` branches
+- Pull Requests to `main` branch
 
-### Jobs
+**Jobs:**
+- `build-and-test`: Compiles and tests the code
+- `build-artifacts`: Creates release packages (only on main branch)
 
-#### 1. Build and Test (`build-and-test`)
-- Runs on Ubuntu latest
-- Installs build dependencies (g++, make)
-- Compiles the Basic Linked List project
-- Runs automated tests
-- Uploads artifacts
+### 2. Manual Release (`manual-release.yml`)
+**Triggers:**
+- Manual trigger from GitHub Actions tab
+- Allows custom version numbers and release notes
 
-#### 2. Create Release (`create-release`)
-- Only runs on main branch pushes
-- Creates a release package
-- Generates automatic release tags
-- Uploads release artifacts to GitHub Releases
+**Features:**
+- Custom version tagging
+- Personalized release notes
+- Creates official GitHub releases
+- Comprehensive testing before release
 
 ### Artifacts
 - Compiled binaries are stored as artifacts for 30 days

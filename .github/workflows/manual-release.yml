@@ -1,0 +1,85 @@
+name: Manual Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+      release_notes:
+        description: 'Release notes'
+        required: false
+        default: 'New release with latest features and improvements'
+
+permissions:
+  contents: write
+
+jobs:
+  create-manual-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential g++ make
+        
+    - name: Build and Test
+      run: |
+        cd basic_linked_list
+        make clean
+        make
+        chmod +x test.sh
+        ./test.sh
+        
+    - name: Package Release
+      run: |
+        mkdir -p release
+        cp basic_linked_list/linkedlist release/
+        cp basic_linked_list/README.md release/basic_linked_list_README.md
+        cp basic_linked_list/LinkedList.h release/
+        cp basic_linked_list/main.cpp release/
+        cp basic_linked_list/Makefile release/
+        cp basic_linked_list/test.sh release/
+        cp README.md release/
+        tar -czf cpp-programming-${{ github.event.inputs.version }}.tar.gz release/
+        
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.event.inputs.version }}
+        name: Release ${{ github.event.inputs.version }}
+        body: |
+          ## C++ Programming Release ${{ github.event.inputs.version }}
+          
+          ${{ github.event.inputs.release_notes }}
+          
+          ### What's Included:
+          - ✅ Compiled executable (`linkedlist`)
+          - ✅ Complete source code
+          - ✅ Documentation and README files
+          - ✅ Makefile for building
+          - ✅ Automated test suite
+          
+          ### Features:
+          - Interactive menu-driven linked list operations
+          - Robust error handling and input validation
+          - Search and size functionality
+          - Comprehensive automated testing
+          - CI/CD pipeline with GitHub Actions
+          
+          ### Usage:
+          1. Download and extract the release package
+          2. Run `make` to build the project
+          3. Execute `./linkedlist` to start the program
+          4. Run `./test.sh` to execute automated tests
+          
+        files: |
+          cpp-programming-${{ github.event.inputs.version }}.tar.gz
+        draft: false
+        prerelease: false
+        make_latest: true
