@@ -73,14 +73,14 @@ analyze_commits() {
         return
     fi
     
-    # Check for breaking changes (major version)
-    if echo "$commits" | grep -q -i "BREAKING\|breaking change\|major:"; then
+    # Check for breaking changes (major version) - case insensitive
+    if echo "$commits" | grep -q -iE "BREAKING|breaking.change|major:|^[^:]*:\s*BREAKING"; then
         echo "major"
         return
     fi
     
     # Check for new features (minor version)
-    if echo "$commits" | grep -q -i "feat\|feature\|add\|new\|minor:"; then
+    if echo "$commits" | grep -q -iE "feat|feature|add:|new:|minor:|^[^:]*:\s*(feat|feature|add|new)"; then
         echo "minor"
         return
     fi
