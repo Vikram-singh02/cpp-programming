@@ -1,6 +1,6 @@
 # CI/CD Pipeline Documentation
 
-This repository uses GitHub Actions for continuous integration and deployment.
+This document describes the GitHub Actions CI/CD pipeline for the C++ Programming repository.
 
 ## Pipeline Overview
 
@@ -9,6 +9,7 @@ The CI/CD pipeline automatically:
 2. **Tests** the functionality with automated test scripts
 3. **Creates artifacts** with compiled binaries
 4. **Packages releases** for distribution
+5. **Manages semantic versioning** automatically
 
 ## Workflows
 

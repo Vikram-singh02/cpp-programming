@@ -81,7 +81,7 @@ cd double_linked_list && ./test.sh && cd ..
 ## 📚 Documentation
 
 - 📖 [Versioning Guide](docs/VERSIONING.md) - Semantic versioning system
-- 🔧 [CI/CD Documentation](.github/README.md) - Pipeline details
+- 🔧 [CI/CD Documentation](docs/CI-CD.md) - Pipeline details
 - 📋 Individual project READMEs in each directory
 
 ## 🤝 Contributing
