@@ -12,6 +12,43 @@ permissions:
   packages: write
 
 jobs:
+  versioning:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    permissions:
+      contents: write
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch full history for proper versioning
+        
+    - name: Configure Git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
+    - name: Run Version Manager
+      run: |
+        chmod +x scripts/version-manager.sh
+        ./scripts/version-manager.sh auto
+        
+    - name: Commit Version Changes
+      run: |
+        if git diff --quiet VERSION; then
+          echo "No version changes to commit"
+        else
+          git add VERSION
+          git commit -m "chore: update version [skip ci]"
+          git push origin main
+        fi
+        
+    - name: Push Tags
+      run: |
+        git push origin --tags
+
   build-and-test:
     runs-on: ubuntu-latest
     
@@ -26,23 +63,46 @@ jobs:
         
     - name: Build Basic Linked List
       run: |
+        echo "🔨 Building Basic Linked List..."
         cd basic_linked_list
         make clean
         make
+        echo "✅ Basic Linked List built successfully"
         
-    - name: Run Automated Tests
+    - name: Run Basic Linked List Tests
       run: |
+        echo "🧪 Testing Basic Linked List..."
         cd basic_linked_list
         chmod +x test.sh
         ./test.sh
+        echo "✅ Basic Linked List tests passed"
         
-    - name: Upload artifacts
+    - name: Build Double Linked List
+      run: |
+        echo "🔨 Building Double Linked List..."
+        cd double_linked_list
+        make clean
+        make
+        echo "✅ Double Linked List built successfully"
+        
+    - name: Run Double Linked List Tests
+      run: |
+        echo "🧪 Testing Double Linked List..."
+        cd double_linked_list
+        chmod +x test.sh
+        ./test.sh
+        echo "✅ Double Linked List tests passed"
+        
+    - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: cpp-binaries-${{ github.sha }}
         path: |
           basic_linked_list/linkedlist
           basic_linked_list/README.md
+          double_linked_list/double_linkedlist
+          double_linked_list/README.md
+          VERSION.md
         retention-days: 30
 
   build-artifacts:
@@ -59,22 +119,71 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y build-essential g++ make
         
-    - name: Build for Release
+    - name: Build All Projects for Release
       run: |
+        echo "🔨 Building all projects for release..."
+        
+        # Build Basic Linked List
         cd basic_linked_list
-        make clean
-        make
+        make clean && make
+        cd ..
+        
+        # Build Double Linked List
+        cd double_linked_list
+        make clean && make
+        cd ..
+        
+        echo "✅ All projects built successfully"
+        
+    - name: Run All Tests
+      run: |
+        echo "🧪 Running comprehensive test suite..."
+        
+        # Test Basic Linked List
+        cd basic_linked_list
+        chmod +x test.sh
+        ./test.sh
+        cd ..
+        
+        # Test Double Linked List
+        cd double_linked_list
+        chmod +x test.sh
+        ./test.sh
+        cd ..
+        
+        echo "✅ All tests passed successfully"
         
     - name: Package Release
       run: |
+        echo "📦 Creating release package..."
         mkdir -p release
-        cp basic_linked_list/linkedlist release/
-        cp basic_linked_list/README.md release/
-        cp basic_linked_list/LinkedList.h release/
-        cp basic_linked_list/main.cpp release/
-        cp basic_linked_list/Makefile release/
-        cp basic_linked_list/test.sh release/
+        
+        # Copy Basic Linked List files
+        mkdir -p release/basic_linked_list
+        cp basic_linked_list/linkedlist release/basic_linked_list/
+        cp basic_linked_list/README.md release/basic_linked_list/
+        cp basic_linked_list/LinkedList.h release/basic_linked_list/
+        cp basic_linked_list/main.cpp release/basic_linked_list/
+        cp basic_linked_list/Makefile release/basic_linked_list/
+        cp basic_linked_list/test.sh release/basic_linked_list/
+        
+        # Copy Double Linked List files
+        mkdir -p release/double_linked_list
+        cp double_linked_list/double_linkedlist release/double_linked_list/
+        cp double_linked_list/README.md release/double_linked_list/
+        cp double_linked_list/DoubleLinkedList.h release/double_linked_list/
+        cp double_linked_list/main.cpp release/double_linked_list/
+        cp double_linked_list/Makefile release/double_linked_list/
+        cp double_linked_list/test.sh release/double_linked_list/
+        
+        # Copy main files
+        cp README.md release/
+        cp VERSION.md release/
+        
+        # Create archive
         tar -czf cpp-programming-release.tar.gz release/
+        
+        echo "✅ Release package created successfully"
         
     - name: Upload Release Artifacts
       uses: actions/upload-artifact@v4
@@ -84,3 +193,24 @@ jobs:
           cpp-programming-release.tar.gz
           release/
         retention-days: 90
+        
+    - name: Generate Build Summary
+      run: |
+        echo "## 🎉 Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### ✅ Successfully Built Projects:" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔗 Basic Linked List" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔗 Double Linked List" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📊 Test Results:" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ All tests passed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Memory management verified" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Error handling tested" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📦 Artifacts Generated:" >> $GITHUB_STEP_SUMMARY
+        echo "- Compiled binaries for all projects" >> $GITHUB_STEP_SUMMARY
+        echo "- Complete source code package" >> $GITHUB_STEP_SUMMARY
+        echo "- Documentation and test suites" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🔗 Download:" >> $GITHUB_STEP_SUMMARY
+        echo "Release artifacts are available in the Actions tab." >> $GITHUB_STEP_SUMMARY

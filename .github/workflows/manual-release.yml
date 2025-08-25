@@ -3,10 +3,16 @@ name: Manual Release
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Release version (e.g., v1.0.0)'
+      version_type:
+        description: 'Version bump type'
         required: true
-        default: 'v1.0.0'
+        default: 'auto'
+        type: choice
+        options:
+        - auto
+        - major
+        - minor
+        - patch
       release_notes:
         description: 'Release notes'
         required: false
@@ -22,19 +28,44 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
+      with:
+        fetch-depth: 0
+        
+    - name: Configure Git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
     - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential g++ make
         
-    - name: Build and Test
+    - name: Build and Test All Projects
       run: |
+        # Build and test basic linked list
         cd basic_linked_list
-        make clean
-        make
-        chmod +x test.sh
-        ./test.sh
+        make clean && make
+        chmod +x test.sh && ./test.sh
+        cd ..
+        
+        # Build and test double linked list
+        cd double_linked_list  
+        make clean && make
+        chmod +x test.sh && ./test.sh
+        cd ..
+        
+    - name: Generate Version
+      id: version
+      run: |
+        chmod +x scripts/version-manager.sh
+        if [ "${{ github.event.inputs.version_type }}" = "auto" ]; then
+          NEW_VERSION=$(./scripts/version-manager.sh auto | grep "New version" | cut -d' ' -f3)
+        else
+          NEW_VERSION=$(./scripts/version-manager.sh ${{ github.event.inputs.version_type }} | grep -o 'v[0-9]*\.[0-9]*\.[0-9]*')
+        fi
+        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "Generated version: $NEW_VERSION"
         
     - name: Package Release
       run: |
@@ -46,15 +77,15 @@ jobs:
         cp basic_linked_list/Makefile release/
         cp basic_linked_list/test.sh release/
         cp README.md release/
-        tar -czf cpp-programming-${{ github.event.inputs.version }}.tar.gz release/
+        tar -czf cpp-programming-${{ steps.version.outputs.version }}.tar.gz release/
         
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ github.event.inputs.version }}
-        name: Release ${{ github.event.inputs.version }}
+        tag_name: ${{ steps.version.outputs.version }}
+        name: Release ${{ steps.version.outputs.version }}
         body: |
-          ## C++ Programming Release ${{ github.event.inputs.version }}
+          ## C++ Programming Release ${{ steps.version.outputs.version }}
           
           ${{ github.event.inputs.release_notes }}
           
@@ -79,7 +110,7 @@ jobs:
           4. Run `./test.sh` to execute automated tests
           
         files: |
-          cpp-programming-${{ github.event.inputs.version }}.tar.gz
+          cpp-programming-${{ steps.version.outputs.version }}.tar.gz
         draft: false
         prerelease: false
         make_latest: true

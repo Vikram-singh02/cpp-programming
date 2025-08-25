@@ -1,0 +1,15 @@
+# Version Information
+VERSION=0.1.0
+RELEASE_DATE=2025-08-25 11:06:42 UTC
+COMMIT_HASH=298d02523859b1639adffdcc3ed5542d13c71418
+BRANCH=main
+
+# Semantic Versioning Rules:
+# MAJOR version: Breaking changes, incompatible API changes
+# MINOR version: New features, backwards compatible
+# PATCH version: Bug fixes, backwards compatible
+
+# Commit Keywords:
+# feat/feature/add/new/minor: -> Minor version bump
+# fix/patch/bug: -> Patch version bump  
+# BREAKING/major: -> Major version bump

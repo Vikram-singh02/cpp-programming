@@ -1,8 +1,18 @@
 # C++ Programming Examples
 
 ![CI/CD Pipeline](https://github.com/Vikram-singh02/cpp-programming/actions/workflows/ci-cd.yml/badge.svg)
+![Version](https://img.shields.io/github/v/tag/Vikram-singh02/cpp-programming?label=version)
 
 This repository contains various C++ programming examples and implementations, focusing on fundamental data structures and algorithms.
+
+## 🎯 Semantic Versioning
+
+This project uses **automated semantic versioning** based on commit messages:
+- `feat:` → Minor version bump (new features)
+- `fix:` → Patch version bump (bug fixes)  
+- `BREAKING:` → Major version bump (breaking changes)
+
+See [Versioning Documentation](docs/VERSIONING.md) for complete details.
 
 ## CI/CD Pipeline
 
@@ -10,6 +20,7 @@ This project uses GitHub Actions for continuous integration and deployment:
 - ✅ Automatic building and testing on every push
 - ✅ Automated test suite with comprehensive coverage
 - ✅ Binary artifact generation for every build
+- ✅ **Automated semantic versioning**
 - ✅ Manual release creation with custom versioning
 
 ### Creating Releases
@@ -17,8 +28,9 @@ To create a new release:
 1. Go to the "Actions" tab in GitHub
 2. Select "Manual Release" workflow
 3. Click "Run workflow"
-4. Enter version number and release notes
-5. The system will build, test, and create the release automatically
+4. Choose version bump type (auto/major/minor/patch)
+5. Enter release notes
+6. The system will build, test, version, and create the release automatically
 
 See [CI/CD Documentation](.github/README.md) for more details.
 
@@ -30,6 +42,15 @@ A simple implementation of a singly linked list data structure in C++, demonstra
 - Deletion of nodes
 - Traversal and display
 - Memory management
+
+### [Double Linked List](double_linked_list/) ⭐ NEW
+A comprehensive implementation of a doubly linked list data structure in C++, featuring:
+- Bidirectional navigation (forward and backward)
+- Insert after specific value functionality
+- Position-based operations
+- Enhanced interactive menu (13 options)
+- Reverse display capability
+- Advanced error handling
 
 ## Getting Started
 
